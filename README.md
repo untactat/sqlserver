@@ -1,5 +1,32 @@
 # SQL Server Grammar
 
+# 3. 특수문자 찾기 
+```
+--drop table test_j
+create table test_j
+(
+    s nvarchar(4000)
+)
+
+insert into test_j select '123'
+insert into test_j select '123a'
+insert into test_j select '하하하'
+insert into test_j select '하하22하'
+insert into test_j select '하하!@#$%^&*(){}|\`<>/하'
+insert into test_j select '하하        !"#$%&''()*+,-./         하'
+insert into test_j select '하하        :;<=>?@         하'
+insert into test_j select '하하        [\]^_`         하'
+insert into test_j select '하하        {|}~         하'
+
+select * From test_j where s like '%[0-9]%'
+select * From test_j where s like '%[!-/]%'
+select * From test_j where s like '%[:-@]%'
+select * From test_j where s like '%[[-`]%'
+select * From test_j where s like '%[{-~]%'
+select * From test_j where s like '%[ㄱ-힇]%'
+--select * From test_j where s like '%[ㄱ-힇%]'
+```
+
 # 2. 계층형쿼리 
 ```
 ;WITH TEMP AS 
