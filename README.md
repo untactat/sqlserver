@@ -1,5 +1,51 @@
 # SQL Server Grammar
 
+# 4. xml 
+```
+--drop table test_j
+create table test_j( a int, b int )
+insert into test_j select 1,2
+insert into test_j select 1,1
+insert into test_j select 1,3
+insert into test_j select 2,2
+insert into test_j select 2,null
+insert into test_j select 3,null
+
+select B.a, 
+       (SELECT A.b FROM test_j AS A WHERE A.a = B.a FOR XML AUTO, ELEMENTS),
+       replace(replace( replace( replace( (SELECT Z.b FROM test_j AS Z 
+                                            WHERE Z.a = B.a 
+                                            ORDER BY Z.b
+                                              FOR XML AUTO, ELEMENTS), 
+        '</b></Z><Z><b>', ',' ), 
+        '<Z><b>', '' ), 
+        '</b></Z>', '' ),
+        '<Z/>', '')
+from test_j as B
+group by B.a 
+
+-- <A><b>2</b></A><A><b>1</b></A><A><b>3</b></A><A><b>2</b></A>
+
+SELECT * 
+  FROM test_j    
+   FOR XML RAW ('DataBlock1'), ROOT('ROOT')
+
+--<ROOT><DataBlock1 a="1" b="2"/><DataBlock1 a="1" b="1"/><DataBlock1 a="1" b="3"/><DataBlock1 a="2" b="2"/><DataBlock1 a="2"/><DataBlock1 a="3"/></ROOT>
+
+SELECT * 
+  FROM test_j    
+   FOR XML RAW ('DataBlock1'), ROOT('ROOT'), ELEMENTS  
+
+--<ROOT><DataBlock1><a>1</a><b>2</b></DataBlock1><DataBlock1><a>1</a><b>1</b></DataBlock1><DataBlock1><a>1</a><b>3</b></DataBlock1><DataBlock1><a>2</a><b>2</b></DataBlock1><DataBlock1><a>2</a></DataBlock1><DataBlock1><a>3</a></DataBlock1></ROOT>
+
+SELECT * 
+  FROM test_j    
+   FOR XML PATH('DataBlock1') 
+
+--<DataBlock1><a>1</a><b>2</b></DataBlock1><DataBlock1><a>1</a><b>1</b></DataBlock1><DataBlock1><a>1</a><b>3</b></DataBlock1><DataBlock1><a>2</a><b>2</b></DataBlock1><DataBlock1><a>2</a></DataBlock1><DataBlock1><a>3</a></DataBlock1>
+
+```
+
 # 3. 특수문자 찾기 
 ```
 --drop table test_j
